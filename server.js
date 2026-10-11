@@ -6,7 +6,9 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+
+// يخلي السيرفر يقرأ الملفات العادية مثل index.html
+app.use(express.static(__dirname));
 
 const filePath = path.join(__dirname, 'data.json');
 
@@ -22,6 +24,11 @@ function readData() {
   }
   return [];
 }
+
+// مسار عرض الصفحة الرئيسية
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 // مسار حفظ البيانات
 app.post('/api/save-data', (req, res) => {
@@ -96,20 +103,7 @@ app.get('/userslist', (req, res) => {
 
   res.send(html);
 });
-const path = require('path');
 
-// يخلي السيرفر يقرأ الملفات العادية مثل index.html
-app.use(express.static(__dirname));
-
-// يرجع ملف index.html أول ما يحل شخص الموقع
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
